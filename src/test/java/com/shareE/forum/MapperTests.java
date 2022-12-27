@@ -1,7 +1,9 @@
 package com.shareE.forum;
 import com.shareE.forum.dao.DiscussMapper;
+import com.shareE.forum.dao.LoginTicketMapper;
 import com.shareE.forum.entity.DiscussPost;
 import com.shareE.forum.dao.UserMapper;
+import com.shareE.forum.entity.LoginTicket;
 import com.shareE.forum.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +25,9 @@ public class MapperTests {
 
 	@Autowired
 	private DiscussMapper discussMapper;
+
+	@Autowired
+	private LoginTicketMapper loginTicketMapper;
 
 	@Test
 	public void testSelectById() {
@@ -72,5 +77,25 @@ public class MapperTests {
 
 		int rows = discussMapper.selectDiscussPostRows(149);
 		System.out.println(rows);
+	}
+
+	@Test
+	public void testInsertLoginTicket() {
+		LoginTicket loginTicket = new LoginTicket();
+		loginTicket.setUserId(101);
+		loginTicket.setStatus(0);
+		loginTicket.setTicket("abc");
+		loginTicket.setExpired(new Date(System.currentTimeMillis() + 1000 * 60 * 10));
+		loginTicketMapper.insertLoginTicket(loginTicket);
+	}
+
+	@Test
+	public void testSelectLoginTicket() {
+		LoginTicket loginTicket = loginTicketMapper.selectByTicket("abc");
+		System.out.println(loginTicket);
+
+		loginTicketMapper.updateStatus("abc", 1);
+		loginTicket = loginTicketMapper.selectByTicket("abc");
+		System.out.println(loginTicket);
 	}
 }
