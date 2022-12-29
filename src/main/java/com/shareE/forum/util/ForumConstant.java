@@ -11,4 +11,8 @@ public interface ForumConstant {
 	int DEFAULT_EXPIRED_SESSIONS = 3600 * 12;
 
 	int REMEMBER_EXPIRED_SESSIONS = 3600 * 24 * 100;
+
+	int ENTITY_TYPE_POST = 1;
+
+	int ENTITY_TYPE_COMMENT = 2;
 }
