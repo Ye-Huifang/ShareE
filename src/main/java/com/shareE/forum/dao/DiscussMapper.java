@@ -15,7 +15,7 @@ public interface DiscussMapper {
 	// Necessary when there is only one parameter and used in <if>
 	int selectDiscussPostRows(@Param("userId") int userId);
 
-
+	int insertDiscussPost(DiscussPost discussPost);
 
 
 }
