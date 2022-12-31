@@ -1,9 +1,11 @@
 package com.shareE.forum;
 import com.shareE.forum.dao.DiscussMapper;
 import com.shareE.forum.dao.LoginTicketMapper;
+import com.shareE.forum.dao.MessageMapper;
 import com.shareE.forum.entity.DiscussPost;
 import com.shareE.forum.dao.UserMapper;
 import com.shareE.forum.entity.LoginTicket;
+import com.shareE.forum.entity.Message;
 import com.shareE.forum.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +30,9 @@ public class MapperTests {
 
 	@Autowired
 	private LoginTicketMapper loginTicketMapper;
+
+	@Autowired
+	private MessageMapper messageMapper;
 
 	@Test
 	public void testSelectById() {
@@ -97,5 +102,28 @@ public class MapperTests {
 		loginTicketMapper.updateStatus("abc", 1);
 		loginTicket = loginTicketMapper.selectByTicket("abc");
 		System.out.println(loginTicket);
+	}
+
+	@Test
+	public void testSelectLetters() {
+		List<Message> list = messageMapper.selectConversations(111, 0, 20);
+		for (Message message : list) {
+			System.out.println(message);
+		}
+
+		int count = messageMapper.selectConversationCount(111);
+		System.out.println(count);
+
+		list = messageMapper.selectLetters("111_112", 0, 10);
+		for (Message message : list) {
+			System.out.println(message);
+		}
+
+		count = messageMapper.selectLetterCount("111_112");
+		System.out.println(count);
+
+		count = messageMapper.selectLetterUnreadCount(131, "111_131");
+		System.out.println(count);
+
 	}
 }
