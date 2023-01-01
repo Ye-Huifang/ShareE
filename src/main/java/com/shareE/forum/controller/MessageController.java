@@ -5,6 +5,7 @@ import com.shareE.forum.entity.Page;
 import com.shareE.forum.entity.User;
 import com.shareE.forum.service.MessageService;
 import com.shareE.forum.service.UserService;
+import com.shareE.forum.util.ForumUtil;
 import com.shareE.forum.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,11 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class MessageController {
@@ -48,13 +47,14 @@ public class MessageController {
 				map.put("conversation", message);
 				map.put("letterCount", messageService.findLetterCount(message.getConversationId()));
 				map.put("unreadCount", messageService.findLetterUnreadCount(user.getId(), message.getConversationId()));
-				int targetId = user.getId() == message.getFromId() ? message.getId() : message.getFromId();
+				int targetId = user.getId() == message.getFromId() ? message.getFromId() : message.getFromId();
 				map.put("target", userService.findUserById(targetId));
 
 				conversations.add(map);
 			}
 		}
 		model.addAttribute("conversations", conversations);
+
 
 		// find count of unread message
 		int letterUnreadCount = messageService.findLetterUnreadCount(user.getId(), null);
@@ -86,7 +86,27 @@ public class MessageController {
 		// find target of direct message
 		model.addAttribute("target", getLetterTarget(conversationId));
 
+		// set unread to read
+		List<Integer> ids = getLetterIds(letterList);
+		if (!ids.isEmpty()) {
+			messageService.readMessage(ids);
+		}
+
 		return "/site/letter-detail";
+	}
+
+	private List<Integer> getLetterIds(List<Message> letterList) {
+		List<Integer> ids = new ArrayList<>();
+
+		if (letterList != null) {
+			for (Message message : letterList) {
+				if (hostHolder.getUser().getId() == message.getToId() && message.getStatus() == 0) {
+					ids.add(message.getId());
+				}
+			}
+		}
+
+		return  ids;
 	}
 
 	private User getLetterTarget(String conversationId) {
@@ -97,7 +117,30 @@ public class MessageController {
 		if (hostHolder.getUser().getId() == id0) {
 			return userService.findUserById(id1);
 		} else {
-			return  userService.findUserById(id0);
+			return userService.findUserById(id0);
 		}
+	}
+
+	@RequestMapping(path = "/letter/send", method = RequestMethod.POST)
+	@ResponseBody
+	public String sendLetter(String toName, String content) {
+		User target = userService.findUserByName(toName);
+		if (target == null) {
+			return ForumUtil.getJSONString(1, "User does not exist!");
+		}
+
+		Message message = new Message();
+		message.setFromId(hostHolder.getUser().getId());
+		message.setToId(target.getId());
+		if (message.getFromId() < message.getToId()) {
+			message.setConversationId(message.getFromId() + "_" + message.getToId());
+		} else {
+			message.setConversationId(message.getToId() + "_" + message.getFromId());
+		}
+		message.setContent(content);
+		message.setCreateTime(new Date());
+		messageService.addMessage(message);
+
+		return ForumUtil.getJSONString(0);
 	}
 }

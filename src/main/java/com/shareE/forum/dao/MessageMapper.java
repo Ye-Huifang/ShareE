@@ -25,4 +25,10 @@ public interface MessageMapper {
 	// find count of unread direct message
 	int selectLetterUnreadCount(@Param("userId") int userId, @Param("conversationId") String conversationId);
 
+	// add message
+	int insertMessage(Message message);
+
+	// update status of message
+	int updateStatus(List<Integer> ids, int status);
+
 }

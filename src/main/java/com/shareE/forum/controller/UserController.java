@@ -103,4 +103,5 @@ public class UserController {
 			logger.error("Failed to get header: " + e.getMessage());
 		}
 	}
+
 }
