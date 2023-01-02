@@ -2,8 +2,10 @@ package com.shareE.forum.controller;
 
 import com.shareE.forum.annotation.LoginRequired;
 import com.shareE.forum.entity.User;
+import com.shareE.forum.service.FollowService;
 import com.shareE.forum.service.LikeService;
 import com.shareE.forum.service.UserService;
+import com.shareE.forum.util.ForumConstant;
 import com.shareE.forum.util.ForumUtil;
 import com.shareE.forum.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +28,7 @@ import java.io.OutputStream;
 
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements ForumConstant {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -47,6 +49,9 @@ public class UserController {
 
 	@Autowired
 	private LikeService likeService;
+
+	@Autowired
+	private FollowService followService;
 
 	@LoginRequired
 	@RequestMapping(path = "/setting", method = RequestMethod.GET)
@@ -116,11 +121,31 @@ public class UserController {
 			throw new RuntimeException("User does not exist!");
 		}
 
+		// user
 		model.addAttribute("user", user);
+
+		// like count
 		int likeCount = likeService.findUserLikeCount(userId);
 		model.addAttribute("likeCount", likeCount);
 
+		// followee count
+		long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+		model.addAttribute("followeeCount", followeeCount);
+
+		// follower count
+		long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+		model.addAttribute("followerCount", followerCount);
+
+		// is followed
+		boolean hasFollowed = false;
+		if (hostHolder.getUser() != null) {
+			hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+		}
+		model.addAttribute("hasFollowed", hasFollowed);
+
+
 		return "/site/profile";
 	}
+
 
 }

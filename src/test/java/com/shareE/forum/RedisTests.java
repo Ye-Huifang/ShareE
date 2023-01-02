@@ -18,6 +18,7 @@ public class RedisTests {
 	@Autowired
 	private StringRedisTemplate redisTemplate;
 
+
 	@Test
 	public void testStrings() {
 		String redisKey = "test:counter";
