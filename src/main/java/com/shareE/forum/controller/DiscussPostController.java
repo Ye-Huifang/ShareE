@@ -6,6 +6,7 @@ import com.shareE.forum.entity.Page;
 import com.shareE.forum.entity.User;
 import com.shareE.forum.service.CommentService;
 import com.shareE.forum.service.DiscussPostService;
+import com.shareE.forum.service.LikeService;
 import com.shareE.forum.service.UserService;
 import com.shareE.forum.util.ForumConstant;
 import com.shareE.forum.util.ForumUtil;
@@ -36,6 +37,9 @@ public class DiscussPostController implements ForumConstant {
 	@Autowired
 	private CommentService commentService;
 
+	@Autowired
+	private LikeService likeService;
+
 	@RequestMapping(path = "/add", method = RequestMethod.POST)
 	@ResponseBody
 	public String addDiscussPost(String title, String content) {
@@ -61,7 +65,15 @@ public class DiscussPostController implements ForumConstant {
 		model.addAttribute("post", discussPost);
 		// user
 		User user = userService.findUserById(discussPost.getUserId());
+//		User user = hostHolder.getUser();
 		model.addAttribute("user", user);
+		// like count
+		long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, discussPostId);
+		model.addAttribute("likeCount", likeCount);
+		// like status
+		int likeStatus = hostHolder.getUser() == null ? 0 :
+				likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, discussPostId);
+		model.addAttribute("likeStatus", likeStatus);
 
 		// comment
 		page.setLimit(5);
@@ -78,7 +90,13 @@ public class DiscussPostController implements ForumConstant {
 				Map<String, Object> commentVo = new HashMap<>();
 				commentVo.put("comment", comment);
 				commentVo.put("user", userService.findUserById(comment.getUserId()));
-
+				// like count
+				likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, comment.getId());
+				commentVo.put("likeCount", likeCount);
+				// like status
+				likeStatus = hostHolder.getUser() == null ? 0 :
+						likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, comment.getId());
+				commentVo.put("likeStatus", likeStatus);
 				// reply list (comment to comment)
 				List<Comment> replyList = commentService.findCommentsByEntity(ENTITY_TYPE_COMMENT, comment.getId(), 0, Integer.MAX_VALUE);
 
@@ -88,6 +106,13 @@ public class DiscussPostController implements ForumConstant {
 						Map<String, Object> replyVo = new HashMap<>();
 						replyVo.put("reply", reply);
 						replyVo.put("user", userService.findUserById(reply.getUserId()));
+						// like count
+						likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, reply.getId());
+						replyVo.put("likeCount", likeCount);
+						// like status
+						likeStatus = hostHolder.getUser() == null ? 0 :
+								likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, reply.getId());
+						replyVo.put("likeStatus", likeStatus);
 						User target = reply.getTargetId() == 0 ? null : userService.findUserById(reply.getTargetId());
 						replyVo.put("target", target);
 						replyVoList.add(replyVo);

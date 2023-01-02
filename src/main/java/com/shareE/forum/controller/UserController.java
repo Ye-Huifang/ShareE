@@ -2,6 +2,7 @@ package com.shareE.forum.controller;
 
 import com.shareE.forum.annotation.LoginRequired;
 import com.shareE.forum.entity.User;
+import com.shareE.forum.service.LikeService;
 import com.shareE.forum.service.UserService;
 import com.shareE.forum.util.ForumUtil;
 import com.shareE.forum.util.HostHolder;
@@ -43,6 +44,9 @@ public class UserController {
 
 	@Autowired
 	private HostHolder hostHolder;
+
+	@Autowired
+	private LikeService likeService;
 
 	@LoginRequired
 	@RequestMapping(path = "/setting", method = RequestMethod.GET)
@@ -102,6 +106,21 @@ public class UserController {
 		} catch (IOException e) {
 			logger.error("Failed to get header: " + e.getMessage());
 		}
+	}
+
+	// profile
+	@RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+	public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+		User user = userService.findUserById(userId);
+		if (user == null) {
+			throw new RuntimeException("User does not exist!");
+		}
+
+		model.addAttribute("user", user);
+		int likeCount = likeService.findUserLikeCount(userId);
+		model.addAttribute("likeCount", likeCount);
+
+		return "/site/profile";
 	}
 
 }
