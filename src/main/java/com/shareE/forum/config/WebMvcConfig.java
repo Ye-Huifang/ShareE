@@ -4,6 +4,7 @@ import com.shareE.forum.annotation.LoginRequired;
 import com.shareE.forum.controller.interceptor.AlphaInterceptor;
 import com.shareE.forum.controller.interceptor.LoginRequiredInterceptor;
 import com.shareE.forum.controller.interceptor.LoginTicketInterceptor;
+import com.shareE.forum.controller.interceptor.MessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,6 +21,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Autowired
 	private LoginRequiredInterceptor loginRequiredInterceptor;
 
+	@Autowired
+	private MessageInterceptor messageInterceptor;
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(alphaInterceptor)
@@ -30,6 +34,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				.excludePathPatterns("/**/*.css", "/**/*.png", "/**/*.js", "/**/*.jpg", "/**/*.jpeg");
 
 		registry.addInterceptor(loginRequiredInterceptor)
+				.excludePathPatterns("/**/*.css", "/**/*.png", "/**/*.js", "/**/*.jpg", "/**/*.jpeg");
+
+		registry.addInterceptor(messageInterceptor)
 				.excludePathPatterns("/**/*.css", "/**/*.png", "/**/*.js", "/**/*.jpg", "/**/*.jpeg");
 	}
 }
