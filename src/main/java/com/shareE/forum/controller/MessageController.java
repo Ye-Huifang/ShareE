@@ -179,8 +179,9 @@ public class MessageController implements ForumConstant {
 		// find notification of like
 		message = messageService.findLatestNotice(user.getId(), TOPIC_LIKE);
 		messageVO = new HashMap<>();
+		messageVO.put("message", message);
+
 		if (message != null) {
-			messageVO.put("message", message);
 
 			String content = HtmlUtils.htmlUnescape(message.getContent());
 			Map<String, Object> data = JSONObject.parseObject(content, HashMap.class);
@@ -201,8 +202,9 @@ public class MessageController implements ForumConstant {
 		// find notice of follow
 		message = messageService.findLatestNotice(user.getId(), TOPIC_FOLLOW);
 		messageVO = new HashMap<>();
+		messageVO.put("message", message);
+
 		if (message != null) {
-			messageVO.put("message", message);
 
 			String content = HtmlUtils.htmlUnescape(message.getContent());
 			Map<String, Object> data = JSONObject.parseObject(content, HashMap.class);

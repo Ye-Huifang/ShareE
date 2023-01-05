@@ -25,4 +25,10 @@ public interface ForumConstant {
 	String TOPIC_FOLLOW = "follow";
 
 	int SYSTEM_USER_ID = 1;
+
+	String AUTHORITY_USER = "user";
+
+	String AUTHORITY_ADMIN = "admin";
+
+	String AUTHORITY_MODERATOR = "moderator";
 }
