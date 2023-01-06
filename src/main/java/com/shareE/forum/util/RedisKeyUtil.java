@@ -10,6 +10,8 @@ public class RedisKeyUtil {
 	private static final String PREFIX_KAPTCHA = "kaptcha";
 	private static final String PREFIX_TICKET = "ticket";
 	private static final String PREFIX_USER = "user";
+	private static final String PREFIX_UV = "uv";
+	private static final String PREFIX_DAU = "dau";
 
 	// like:entity:entityType:entityId -> set(userId)
 	public static String getEntityLikeKey(int entityType, int entityId) {
@@ -43,5 +45,23 @@ public class RedisKeyUtil {
 
 	public static String getUserKey(int userId) {
 		return PREFIX_USER + SPLIT + userId;
+	}
+
+	// UV on a single date
+	public static String getUVKey(String date) {
+		return PREFIX_UV + SPLIT + date;
+	}
+
+	// UV on a date range
+	public static String getUVKey(String startDate, String endDate) {
+		return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+	}
+
+	public static String getDAUKey(String date) {
+		return PREFIX_DAU + SPLIT + date;
+	}
+
+	public static String getDAUKey(String startDate, String endDate) {
+		return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
 	}
 }
