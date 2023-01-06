@@ -51,7 +51,7 @@ public class DiscussPostController implements ForumConstant {
 		DiscussPost discussPost = new DiscussPost();
 		discussPost.setContent(content);
 		discussPost.setTitle(title);
-		discussPost.setId(user.getId());
+		discussPost.setUserId(user.getId());
 		discussPost.setCreateTime(new Date());
 		discussPostService.addDiscussPost(discussPost);
 
@@ -130,5 +130,26 @@ public class DiscussPostController implements ForumConstant {
 
 		model.addAttribute("comments", commentVoList);
 		return "/site/discuss-detail";
+	}
+
+	@RequestMapping(path = "/top", method = RequestMethod.POST)
+	@ResponseBody
+	public String setTop(int id) {
+		discussPostService.updateType(id, 1);
+		return ForumUtil.getJSONString(0);
+	}
+
+	@RequestMapping(path = "/wonderful", method = RequestMethod.POST)
+	@ResponseBody
+	public String setWonderful(int id) {
+		discussPostService.updateStatus(id, 1);
+		return ForumUtil.getJSONString(0);
+	}
+
+	@RequestMapping(path = "/delete", method = RequestMethod.POST)
+	@ResponseBody
+	public String setDelete(int id) {
+		discussPostService.updateStatus(id, 2);
+		return ForumUtil.getJSONString(0);
 	}
 }

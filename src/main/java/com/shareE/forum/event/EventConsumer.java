@@ -1,7 +1,9 @@
 package com.shareE.forum.event;
 import com.alibaba.fastjson.JSONObject;
+import com.shareE.forum.entity.DiscussPost;
 import com.shareE.forum.entity.Event;
 import com.shareE.forum.entity.Message;
+import com.shareE.forum.service.DiscussPostService;
 import com.shareE.forum.service.MessageService;
 import com.shareE.forum.util.ForumConstant;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -22,6 +24,9 @@ public class EventConsumer implements ForumConstant {
 
 	@Autowired
 	private MessageService messageService;
+
+	@Autowired
+	private DiscussPostService discussPostService;
 
 	@KafkaListener(topics = {TOPIC_COMMENT, TOPIC_LIKE, TOPIC_FOLLOW})
 	public void handleCommentMessage(ConsumerRecord record) {
@@ -57,4 +62,6 @@ public class EventConsumer implements ForumConstant {
 		message.setContent(JSONObject.toJSONString(content));
 		messageService.addMessage(message);
 	}
+
+
 }

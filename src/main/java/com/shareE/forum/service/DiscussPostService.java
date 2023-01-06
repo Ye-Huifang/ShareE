@@ -50,4 +50,12 @@ public class DiscussPostService {
 	public int updateCommentCount(int id, int commentCount) {
 		return discussMapper.updateCommentCount(id, commentCount);
 	}
+
+	public int updateType(int id, int type) {
+		return discussMapper.updateType(id, type);
+	}
+
+	public int updateStatus(int id, int status) {
+		return discussMapper.updateStatus(id, status);
+	}
 }
