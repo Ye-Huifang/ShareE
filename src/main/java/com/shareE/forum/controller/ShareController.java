@@ -40,6 +40,12 @@ public class ShareController implements ForumConstant{
 	@Value("${wk.image.storage}")
 	private String wkImageStorage;
 
+	@Value("${qiniu.bucket.share.name}")
+	private String shareBucketName;
+
+	@Value("${qiniu.bucket.share.url}")
+	private String shareBucketUrl;
+
 	@RequestMapping(path = "/share", method = RequestMethod.GET)
 	@ResponseBody
 	public String share(String htmlUrl) {
@@ -55,7 +61,8 @@ public class ShareController implements ForumConstant{
 		eventProducer.fireEvent(event);
 
 		Map<String, Object> map = new HashMap<>();
-		map.put("shareUrl", domain + contextPath + "/share/image/" + fileName);
+//		map.put("shareUrl", domain + contextPath + "/share/image/" + fileName);
+		map.put("shareUrl", "http://" + shareBucketUrl + "/" + fileName);
 
 		return ForumUtil.getJSONString(0, null, map);
 	}
@@ -80,4 +87,5 @@ public class ShareController implements ForumConstant{
 			logger.error("Failed to get image: " + e.getMessage());
 		}
 	}
+
 }

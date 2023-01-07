@@ -1,5 +1,7 @@
 package com.shareE.forum.controller;
 
+import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import com.shareE.forum.annotation.LoginRequired;
 import com.shareE.forum.entity.User;
 import com.shareE.forum.service.FollowService;
@@ -9,6 +11,9 @@ import com.shareE.forum.util.ForumConstant;
 import com.shareE.forum.util.ForumUtil;
 import com.shareE.forum.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.BiConsumer;
+import org.apache.logging.log4j.util.ReadOnlyStringMap;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -53,10 +59,44 @@ public class UserController implements ForumConstant {
 	@Autowired
 	private FollowService followService;
 
+	@Value("${qiniu.key.access}")
+	private String accessKey;
+
+	@Value("${qiniu.key.secret}")
+	private String secretKey;
+
+	@Value("${qiniu.bucket.header.name}")
+	private String headerBucketName;
+
+	@Value("${qiniu.bucket.header.url}")
+	private String headerBucketUrl;
+
 	@LoginRequired
 	@RequestMapping(path = "/setting", method = RequestMethod.GET)
-	public String getSettingPage() {
+	public String getSettingPage(Model model) {
+		String fileName = ForumUtil.generateUUID();
+		StringMap policy = new StringMap();
+		policy.put("returnBody", ForumUtil.getJSONString(0));
+		Auth auth = Auth.create(accessKey, secretKey);
+		String uploadToken = auth.uploadToken(headerBucketName, fileName, 3600, policy);
+
+		model.addAttribute("uploadToken", uploadToken);
+		model.addAttribute("fileName", fileName);
+
 		return "/site/setting";
+	}
+
+	@RequestMapping(path = "/header/url", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateHeaderUrl(String fileName) {
+		if (StringUtils.isBlank(fileName)) {
+			return ForumUtil.getJSONString(1, "File name cannot be null!");
+		}
+
+		String url = "http://" + headerBucketUrl + "/" + fileName;
+		userService.updateHeader(hostHolder.getUser().getId(), url);
+
+		return ForumUtil.getJSONString(0);
 	}
 
 	@LoginRequired
