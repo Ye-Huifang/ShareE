@@ -8,7 +8,9 @@ import com.shareE.forum.service.CommentService;
 import com.shareE.forum.service.DiscussPostService;
 import com.shareE.forum.util.ForumConstant;
 import com.shareE.forum.util.HostHolder;
+import com.shareE.forum.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,9 @@ public class CommentController implements ForumConstant {
 	@Autowired
 	private DiscussPostService discussPostService;
 
+	@Autowired
+	private RedisTemplate redisTemplate;
+
 	@RequestMapping(path = "/add/{discussPostId}", method = RequestMethod.POST)
 	public String addComment(@PathVariable("discussPostId") int discussPostId, Comment comment) {
 		comment.setUserId(hostHolder.getUser().getId());
@@ -54,6 +59,9 @@ public class CommentController implements ForumConstant {
 			event.setEntityUserId(target.getUserId());
 		}
 		eventProducer.fireEvent(event);
+
+		String redisKey = RedisKeyUtil.getPostScoreKey();
+		redisTemplate.opsForSet().add(redisKey, discussPostId);
 
 		return "redirect:/discuss/detail/" + discussPostId;
 	}

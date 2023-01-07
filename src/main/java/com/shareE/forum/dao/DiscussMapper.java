@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface DiscussMapper {
 
-	List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit);
+	List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit, int orderMode);
 
 	// @Param is used to alias the parameter
 	// Necessary when there is only one parameter and used in <if>
@@ -25,4 +25,5 @@ public interface DiscussMapper {
 
 	int updateStatus(int id, int status);
 
+	int updateScore(int id, double score);
 }

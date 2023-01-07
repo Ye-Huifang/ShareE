@@ -11,7 +11,9 @@ import com.shareE.forum.service.UserService;
 import com.shareE.forum.util.ForumConstant;
 import com.shareE.forum.util.ForumUtil;
 import com.shareE.forum.util.HostHolder;
+import com.shareE.forum.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +42,9 @@ public class DiscussPostController implements ForumConstant {
 	@Autowired
 	private LikeService likeService;
 
+	@Autowired
+	private RedisTemplate redisTemplate;
+
 	@RequestMapping(path = "/add", method = RequestMethod.POST)
 	@ResponseBody
 	public String addDiscussPost(String title, String content) {
@@ -54,6 +59,9 @@ public class DiscussPostController implements ForumConstant {
 		discussPost.setUserId(user.getId());
 		discussPost.setCreateTime(new Date());
 		discussPostService.addDiscussPost(discussPost);
+
+		String redisKey = RedisKeyUtil.getPostScoreKey();
+		redisTemplate.opsForSet().add(redisKey, discussPost.getId());
 
 		return ForumUtil.getJSONString(0, "Success!");
 	}
@@ -136,6 +144,10 @@ public class DiscussPostController implements ForumConstant {
 	@ResponseBody
 	public String setTop(int id) {
 		discussPostService.updateType(id, 1);
+
+		String redisKey = RedisKeyUtil.getPostScoreKey();
+		redisTemplate.opsForSet().add(redisKey, id);
+
 		return ForumUtil.getJSONString(0);
 	}
 

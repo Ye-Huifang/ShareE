@@ -7,7 +7,9 @@ import com.shareE.forum.service.LikeService;
 import com.shareE.forum.util.ForumConstant;
 import com.shareE.forum.util.ForumUtil;
 import com.shareE.forum.util.HostHolder;
+import com.shareE.forum.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +29,9 @@ public class LikeController implements ForumConstant {
 
 	@Autowired
 	private EventProducer eventProducer;
+
+	@Autowired
+	private RedisTemplate redisTemplate;
 
 	@RequestMapping(path = "/like", method = RequestMethod.POST)
 	@ResponseBody
@@ -50,6 +55,11 @@ public class LikeController implements ForumConstant {
 					.setEntityUserId(entityUserId)
 					.setData("postId", postId);
 			eventProducer.fireEvent(event);
+		}
+
+		if (entityType == ENTITY_TYPE_POST) {
+			String redisKey = RedisKeyUtil.getPostScoreKey();
+			redisTemplate.opsForSet().add(redisKey, postId);
 		}
 
 

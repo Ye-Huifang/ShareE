@@ -28,6 +28,8 @@ public interface ForumConstant {
 
 	String TOPIC_DELETE = "delete";
 
+	String TOPIC_SHARE = "share";
+
 	int SYSTEM_USER_ID = 1;
 
 	String AUTHORITY_USER = "user";
