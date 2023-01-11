@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link rel="icon" href="https://static.nowcoder.com/images/logo_87_87.png"/>
+	<link rel="icon" th:href="@{/img/logo.png}"/>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
 	<link rel="stylesheet" th:href="@{/css/global.css}" />
 	<link rel="stylesheet" th:href="@{/css/login.css}" />
@@ -93,7 +93,7 @@
 									<input type="hidden" name="token" th:value="${uploadToken}">
 									<input type="hidden" name="key" th:value="${fileName}">
 									<input type="file" class="custom-file-input" id="head-image" name="file" lang="es" required="">
-									<label class="custom-file-label" for="head-image" data-browse="文件">Choose image</label>
+									<label class="custom-file-label" for="head-image" data-browse="File">Choose image</label>
 									<div class="invalid-feedback">
 										Verification code incorrect!
 									</div>
